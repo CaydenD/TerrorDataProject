@@ -1,0 +1,252 @@
+---
+title: "Terror Data Project"
+author: "Evan Pennebaker, Cayden Dunn, Ezekiel Murphy"
+date: "11/8/2018"
+output:
+  html_document:  
+    df_print: paged
+fig_width: 9
+highlight: monochrome
+fig_height: 6
+theme: cosmo
+fig_caption: yes
+---
+
+## INTRO: 
+
+This markdown attempts to provide useful information for predictions on potential upcoming attacks, be it where they are or
+who is most likely to commit terrorist acts, this markdown can help these departments in preparing and
+deploying countermeasures. Its intended for anyone working for a government organization regarding national defense or overseas intelligence (DoD, CIA, FBI, Homeland Security, etc.). The Global Terrorism Database is an open-source database. The Global Terrorism Database includes systematic data on domestic as well as international terrorist incidents. Using this we attempt to answer these questions. 
+
+* Is terrorism increasing? What region is attacked the most? How are terrorist attacking us? 
+* How deadly is a certain type of attack? Use different features from the data set to determine the deadliness or effectiveness of attacks to help prescribe policy making 
+ * Which terrorist group has the performed the highest amount of terrorist acts since 1970? Which of these terrorist groups is responsible for the most deaths since 1970?
+ 
+
+
+```{r setup, include= T, echo=FALSE}
+library(ggplot2)
+
+
+d = read.csv("globalterrorism_clean1.csv")
+```
+
+# Is terrorism increasing? What region is attacked the most? How are terrorist attacking us?
+
+### Which region gets attcked the most
+
+```{r, include= T, echo=FALSE}
+library(ggplot2)
+
+
+d = read.csv("globalterrorism_clean1.csv")
+
+d1 = data.frame(frequency = c(table(d$region_txt)), region = names(table(d$region_txt)))
+ordered_frequency <- d1[order(d1$frequency, decreasing = T),]
+
+g <- ggplot(d1, aes(x = reorder(region, frequency), y = frequency ))
+g + geom_bar(stat = "identity") +
+    ggtitle("Regions with the highest number of attacks")+
+    coord_flip() + 
+    ylab("Number of attacks") + 
+    xlab("Region") + theme_minimal()
+
+
+```
+
+####Take Away:
+This graphic displays each region in the data set and orders these regions based off the number of attacks that's that have taken place since 1970 in the said region. After looking at this graphic we can conclude that `The Middle East and North Africa is a hotbed for terrorist activity as it has more than 10,000 more attacks then the second most terrorised region of South Africa. This graphic shows which regions experience the highest concentration of terrorist activity and therefore which need the most help from the global community to rid it of this excessive terrorist activity.
+
+
+####Description: 
+
+1. First a data frame d1 was created out of the vector region_txt that consisted of two columns a frequency column and a region column. Both were constructed using the the table of d$region_txt with frequency column holding the frequency of the table and the region column holding the region name. 
+2. then using ggplot a bar graph was created that displays the highest number of attacks per region. The only technical part of this step beside basic ggplot knowledge was reordering the regions to display from greatest to least which was done with a simple reorder of region by frequency.
+5. the graphic ends up displays and communicating to the viewer the frequency of attacks per region.
+6. Otherwise there are only some simple ggplot features that were used to make the bar plot look nice and more effectively communicate the information displayed.
+
+ 
+
+### Has terrorism increased over the years 
+
+
+```{r, include= T, echo=FALSE}
+
+library(ggplot2)
+library('plyr')
+
+d = read.csv("globalterrorism_clean1.csv")
+
+d1 = data.frame(plyr::ddply(d, c("iyear"), summarize, freq = length(iyear)))
+j <- ggplot(d1, aes(x = iyear, y = freq))
+j + geom_line() +
+    ylab("Number of attacks") +
+    xlab("Year") +
+    ggtitle("Trend in terrorist activity") 
+
+```
+
+
+####Take Away:
+This graphic displays the frequency of terrorist attacks that happen per year ever since 1970. This graphic clearly displays the fact that after the year 2011 there was a significant spike in terrorist attacks. In fact after 2011 terrorist attacks nearly triple before seeing a quick decline. This graphic displays a clear spike in terrorist activity and can serve as a benchmark for how prevalent terrorist is global and how terror rates change over time as the model and data set are kept up to data as time goes on. 
+
+
+
+####Description:
+
+1. First a data frame d1 was created out of the vector iyear that consisted of two columns a frequency column and a years column. Both were constructed using the the table of d$iyear with frequency column holding the frequency of the table and the years column holding the year in which the attacks took place.
+2. R was treating the years as numbers and throwing off ggplot so i treated d$iyear as numeric and this solved the problem but created another it made my tic marks on my graphic numeric so i added custom tick marks every 10 years to make the graphic communicate better to its intended audience 
+3. Then using ggplot i plotted using a line plot the frequency of attacks performed by terrorism per year. 
+4. the graphic ends up displays and communicating to the viewer the frequency of attacks per year.
+5. Otherwise there are only some simple ggplot features that were used to make the bar plot look nice and more effectively communicate the information displayed.  
+
+
+
+### What type of Terroist Attack is most common
+
+
+```{r, include= T, echo=FALSE}
+library(ggplot2)
+
+
+d = read.csv("globalterrorism_clean1.csv")
+
+d1 = data.frame(frequency = c(table(d$attacktype1_txt)), typ_of_atk = names(table(d$attacktype1_txt)))
+ordered_atk_typ <- d1[order(d$attacktype1_txt, decreasing = T),]
+
+g <- ggplot(d1, aes(x = reorder(typ_of_atk, frequency), y = frequency ))
+g + geom_bar(stat = "identity") +
+    ggtitle("Most common type of terrorist Attack") +
+    coord_flip() + 
+    ylab("Number of attacks") + 
+    xlab("Type of Attack") + theme_minimal()
+
+
+```
+
+####Take Away:
+This graphic displays the frequency of a given type of terrorist attack carried out by terrorist since 1970. The graphic clearly displays that bombings and explosive attacks are the most prominent and most commonly used tool for terrorist to carry out attacks. in fact it's twice as  likely than than a terrorist using any other means to carry out an attack. This graphic can assist in deterring tering terrorist attacks because if we know which method is most common for the terrorist to use to attack us we can better prepare and fortify for the said type of attack.
+
+####Description: 
+
+1. First a data frame d1 was created out of the vector attacktype1_txt that consisted of two columns a frequency column and a typ_of_atk column. Both were constructed using the the table of d$attacktype1_txt with frequency column holding the frequency of the table and the typ_of_atk column holding the typ_of_atk name. 
+2. then using ggplot a bar graph was created that displays the highest number of attacks per method of attacking. The only technical part of this step beside basic ggplot knowledge was reordering the regions to display from greatest to least which was done with a simple reorder of type of attack by frequency.
+5. the graphic ends up displays and communicating to the viewer the frequency of attacks per method of attacking.
+6. Otherwise there are only some simple ggplot features that were used to make the bar plot look nice and more effectively communicate the information displayed.
+
+#How deadly is a certain type of attack? Use different features from the data set to determine the deadliness or effectiveness of attacks to help prescribe policy making
+
+###Who is targeted the most in terrorist attacks?
+```{R, echo=FALSE}
+library(plyr)
+a = ddply(d, c('country_txt', 'targtype1_txt'), summarise, total = sum(nkill))
+a = a[order (a[, 'total'], decreasing = F),]
+a$nms =  paste(a$country_txt, a$targtype1_txt, sep = ' : ')
+n = 10
+par(mar = c(4, 20, 1, 1))
+a = na.omit(a)
+a  = tail(a, n)
+barplot(a$total, names.arg = a$nms, horiz = T, las = 1, col = c("light green", "blue", "red", "purple", "yellow", "blue", "orange", "dark blue", "light green", "red"), xlab =  "Number of Kills")
+
+
+```
+
+
+
+####Take Away:
+This barplot shows the top 10 targets and which country they reside in for all terrorist attacks from 1970-2017. After looking at the graphic, we can conclude that Private Citizens & Property in Rwanda have been the highest targeted group since 1970. Also, the militaries, and institutions of the world have been higly targeted. 
+
+####Description: 
+1. First ddply took the data frame d, and created a new data frame only looking at each country and targets, summing up the number of dead targets. 
+2. Then the data frame was sorted in increasing order.
+3. Next, a new column was created, in the format of ("country : target").
+4. Par was used to format the barplot nicely. All NAs were omitted.
+5. Then a barplot printed out the top 10 most targeted groups in the world. 
+
+
+### Where are the clusters of attacks based off of the number of kills?
+```{r, echo=FALSE}
+set.seed(2012)
+k = d[,c('nkill', 'latitude', 'longitude')]
+cols = c('nkill', 'latitude', 'longitude')
+##k <- na.omit(k)
+x = d[!is.na(d$nkill),]
+x = x[!is.na(x$latitude),]
+x = x[!is.na(x$longitude),]
+
+fit <- kmeans(scale(x[,cols]), 8)
+e = x[fit$cluster == 4, ]
+print("The Centers for our 8 Clusters")
+fit$centers
+print("The 5 Attackts of Cluster 4 our Outlier Cluster")
+e$target1
+
+```
+
+
+####Take Away: 
+This kmeans cluster model shows that if 8 clusters were generated, these latitude and longitude points are the centers of these clusters. Also the fourth cluster only is an outliar because it only consists of 5 attacks. These attacks (2 of which are 9-11) had such a large number of deaths, that they became their own cluster. 
+
+
+####Description:
+ 1. First the seed was set to a specific number, 2012 in order to stop different clusters being produced each time. 
+ 3. A vector was created called cols that looked at the number of kills, latitude, and longitude for each attack.
+ 4. Then all the NAs were omitted.
+ 5. The kmeans cluster was created and stored as fit.
+ 6. e represents a cluster, in this case the fourth one to show that its cluster was really small because the 9-11 attacks killed thousands. 
+
+###Optimization of Model
+
+```{r, echo = FALSE}
+set.seed(2012)
+k = d[,c('nkill', 'latitude', 'longitude')]
+cols = c('nkill', 'latitude', 'longitude')
+##k <- na.omit(k)
+x = d[!is.na(d$nkill),]
+x = x[!is.na(x$latitude),]
+x = x[!is.na(x$longitude),]
+
+ssw = c()
+sse = c()
+for (i in 1:15){
+  fit <- kmeans(scale(x[,cols]), i)
+  ssw = append(ssw, sum(fit$withinss))
+  sse = append(sse, sum(fit$betweenss))}
+
+plot(sse, main = "Error over the Addition of more Clusters", xlab = "Number of clusters", ylab = "Error")
+plot(ssw, main = "Sum Squared Error over the Addition of more Clusters", xlab = "Number of clusters", ylab = "Sum Square Error")
+### create other models replacing 'nkill'
+```
+
+#### Description of Optimization of Model:
+
+To find the optimal number of clusters to use in our kmeans model we created a for loop that ran our cluster model with an additional cluster each time and recorded the Error and Sum Square Error after the addition of a new cluster to the model. This was then plotted to show graphicly when the addition of a new cluster had little to no change on the error and Sum Squared Error. It’s clear from the two graphics that after 8 clusters the addition of any more has little to no change to the Sum Squared Error and the Error numbers therefore 8 clusters is the optimal number for this kmeans model.
+
+#Which terrorist group has the performed the highest amount of terrorist acts since 1970? Which of these terrorist groups is responsible for the most deaths since 1970?
+
+###Most Notorious Terrorist Groups
+Which terrorist Group has performed the most attacks since the 1970s?
+
+According to the data, the Taliban has performed the most terrorist attacks by far since the 1970s.  At the time of this dataset, the Taliban were responsible for at least 6,680 successful terrorist attacks.  Right after them is the Islamic State of Iraq and the Levant (ISIL), coming in at 4,759 successful terrorist attacks, almost 2,000 less successful attacks than the Taliban.  This dataset shows that the Taliban are by far the most notorious terrorist group within the last half century, with ISIL taking second place and Sendero Luminoso (Shining Path) taking 3rd place with 4,337 successful terrorist attacks.
+
+```{r, echo=FALSE}
+d1 = data.frame("GroupName" = c("Taliban","ISIL", "Shining Path", "FMLN", "Al-Shabaab", "NPA", "FARC", "IRA", "Boko Haram", "PKK", "CPI-Maoist", "ETA", "LTTE", "ELN"))
+
+numAttacks = c(6680, 4759, 4337, 3317, 3016, 2457, 2302, 2282, 2247, 2175, 1774, 1721, 1530, 1470)
+
+op=par(mar=c(5,7,4,2)+0.1)
+       
+barplot(numAttacks, 
+        xlab = "Group Name", 
+        main = "Most Notorious Terrorist Groups",
+        names.arg = c("Taliban","ISIL", "Shining Path", "FMLN", "Al-Shabaab", "NPA", "FARC", "IRA", "Boko Haram", "PKK", "CPI-Maoist", "ETA", "LTTE", "ELN"),
+        horiz = TRUE,
+        las=1)
+```
+
+####Description:
+Bar plot containing top 14 terrorist groups according to the number of successful terrorist attacks performed from 1970 to 2017.
+
+#Summary
+
+This markdown provided useful information on current terrorism activities as well priceless knowledge on where to allocate the deployment of countermeasures. Its could vair well aid anyone working for a government organization regarding national defense or overseas intelligence (DoD, CIA, FBI, Homeland Security, etc.). The Global Terrorism Database is an open-source database and it will be updated as time progresses and these models can be fitted with the newdata set and can be used as time goes on to further aid the fight against terrorism down the road. Overall the markdown provides easily digestible answers to is pressed questions, and the fact that it's not a one time analysis makes its utility skyrocket.
