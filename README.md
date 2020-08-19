@@ -1,2 +1,0 @@
-# TerrorDataProject
-explain project
